@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Avisos a ganadores</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💬</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap" rel="stylesheet">
+<style>
+
+
+:root{
+  --navy:#0B1E5B;
+  --blue:#1F3FE0;
+  --orange:#FF6A13;
+  --paper:#F3F5FA;
+  --card:#FFFFFF;
+  --line:#D5DAE8;
+  --muted:#5A6690;
+  --ok:#0E7F57;
+  --ok-bg:#E3F4EC;
+  --err:#B8321A;
+  --err-bg:#FCEBE6;
+  --ink:#0B1E5B;
+  --font:"Archivo", "Helvetica Neue", Arial, sans-serif;
+}
+*{box-sizing:border-box}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.45}
+img{max-width:100%}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+.hidden{display:none !important}
+.wrap{max-width:560px;margin:0 auto;padding:0 18px}
+
+/* ---------- Hero ---------- */
+.hero{background:var(--navy);color:#fff;padding:28px 0 56px;position:relative;overflow:hidden}
+.hero::after{ /* borde de ticket cortado */
+  content:"";position:absolute;left:0;right:0;bottom:-1px;height:14px;
+  background:radial-gradient(circle at 10px 14px,var(--paper) 9px,transparent 9.5px) 0 0/20px 14px repeat-x;
+}
+.brands{display:flex;justify-content:space-between;align-items:center;font-weight:800;letter-spacing:.02em;font-size:15px;opacity:.92}
+.brands .honor{font-stretch:125%;letter-spacing:.18em}
+.hero h1{margin:26px 0 6px;font-size:clamp(46px,14vw,74px);line-height:.88;font-weight:800;font-stretch:62%;letter-spacing:-.01em}
+.hero .fechas{display:inline-block;background:var(--orange);color:#fff;font-weight:700;padding:5px 10px;border-radius:4px;font-size:15px}
+.hero p{margin:14px 0 0;max-width:40ch;color:#D4DAF3}
+
+/* ---------- Formulario ---------- */
+main{padding:10px 0 40px}
+.step{margin-top:26px}
+.step h2{display:flex;align-items:baseline;gap:10px;font-size:19px;margin:0 0 12px;font-weight:750}
+.step h2 .n{flex:none;width:26px;height:26px;border-radius:50%;background:var(--blue);color:#fff;font-size:14px;display:grid;place-items:center;transform:translateY(-2px)}
+
+.tickets{display:grid;gap:12px}
+.field .ticket{font-weight:400;margin:0;font-size:16px}
+.ticket{position:relative;display:block;background:var(--card);border:2px solid var(--line);border-radius:10px;cursor:pointer;transition:border-color .15s, box-shadow .15s}
+.ticket input{position:absolute;opacity:0;pointer-events:none}
+.ticket::before,.ticket::after{ /* muescas de ticket */
+  content:"";position:absolute;top:calc(50% - 10px);width:18px;height:20px;background:var(--paper);border:2px solid var(--line);
+}
+.ticket::before{left:-2px;border-left:none;border-radius:0 10px 10px 0}
+.ticket::after{right:-2px;border-right:none;border-radius:10px 0 0 10px}
+.ticket .pics{display:flex;align-items:center;justify-content:center;gap:6px;padding:14px 22px 6px}
+.ticket .pic{width:92px;height:92px;position:relative;flex:none}
+.ticket .pic img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.ticket .plus{font-size:26px;font-weight:800;color:var(--orange)}
+.ticket .txt{padding:4px 22px 0;text-align:center}
+.ticket .eq{font-weight:800;font-size:20px;font-stretch:80%}
+.ticket .gift{color:var(--muted);font-size:15px}
+.ticket .meter{margin:12px 22px 0;border-top:2px dashed var(--line);padding:10px 0 14px;display:flex;align-items:center;gap:10px;font-size:14px}
+.ticket .bar{flex:1;height:8px;border-radius:4px;background:#E6E9F3;overflow:hidden}
+.ticket .bar i{display:block;height:100%;background:var(--blue);width:0;transition:width .4s}
+.ticket .left{font-weight:700;white-space:nowrap}
+.ticket:has(input:checked){border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,106,19,.18)}
+.ticket:has(input:checked)::before,.ticket:has(input:checked)::after{border-color:var(--orange)}
+.ticket:has(input:focus-visible){outline:3px solid var(--orange);outline-offset:3px}
+.ticket.agotado{cursor:not-allowed;opacity:.62}
+.ticket.agotado .left{color:var(--err)}
+.ticket.agotado .bar i{background:var(--err)}
+.ticket.bloqueado{opacity:.35;cursor:not-allowed;filter:grayscale(1)}
+.cambiar{display:block;margin:10px auto 0;background:none;border:none;color:var(--blue);font-weight:700;font-size:15px;text-decoration:underline;cursor:pointer;padding:6px}
+
+.field{margin-bottom:14px}
+.qty{display:flex;align-items:center;gap:14px;margin-top:16px;background:#fff;border:2px solid var(--line);border-radius:10px;padding:12px 14px}
+.qty .lbl{flex:1;font-weight:650;font-size:15px}
+.qty .lbl small{display:block;font-weight:400;color:var(--muted);font-size:13px}
+.qty button{width:44px;height:44px;border-radius:8px;border:2px solid var(--line);background:#fff;font-size:22px;font-weight:700;cursor:pointer;line-height:1}
+.qty button:disabled{opacity:.35;cursor:not-allowed}
+.qty output{min-width:28px;text-align:center;font-size:22px;font-weight:800}
+.done .warn{background:#FFF3E6;color:#8A3B00;padding:10px 12px;border-radius:8px;font-size:14px;margin-top:10px}
+
+.field label{display:block;font-weight:650;margin-bottom:5px;font-size:15px}
+.field .hint{font-size:13px;color:var(--muted);margin-top:4px}
+.field input[type=text],.field input[type=tel],.field select{
+  width:100%;height:50px;padding:0 14px;border:2px solid var(--line);border-radius:8px;background:#fff;font-size:17px;
+}
+.field select{appearance:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9'%3E%3Cpath d='M1 1l6 6 6-6' stroke='%230B1E5B' stroke-width='2' fill='none'/%3E%3C/svg%3E") no-repeat right 14px center;padding-right:38px}
+.field select:disabled{background-color:#EEF0F6;color:var(--muted)}
+.field input:focus,.field select:focus{border-color:var(--blue);outline:none}
+.field.invalid input,.field.invalid select,.field.invalid .upload{border-color:var(--err)}
+.field .err{display:none;color:var(--err);font-size:14px;margin-top:4px;font-weight:600}
+.field.invalid .err{display:block}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:380px){.row2{grid-template-columns:1fr}}
+
+.field .upload,.upload{display:flex;align-items:center;gap:14px;border:2px dashed var(--line);border-radius:10px;background:#fff;padding:14px;cursor:pointer;min-height:84px}
+.upload input{position:absolute;width:1px;height:1px;opacity:0}
+.upload:focus-within{border-color:var(--blue)}
+.upload .thumb{width:56px;height:56px;border-radius:6px;background:#EEF0F6 center/cover no-repeat;flex:none;display:grid;place-items:center}
+.upload .thumb svg{width:26px;height:26px;stroke:var(--muted)}
+.upload.has .thumb svg{display:none}
+.upload strong{display:block}
+.upload strong{font-weight:700}
+.upload span{font-size:14px;color:var(--muted);font-weight:400}
+.field .check{display:flex;gap:12px;align-items:flex-start;font-weight:400;font-size:14px;line-height:1.45;background:#fff;border:2px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer}
+.check input{width:22px;height:22px;flex:none;margin:0;accent-color:var(--blue)}
+.field.invalid .check{border-color:var(--err)}
+
+.alert{border-radius:8px;padding:12px 14px;font-weight:600;margin:18px 0 0}
+.alert.err{background:var(--err-bg);color:var(--err)}
+.alert.info{background:#E7ECFD;color:var(--navy)}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:54px;padding:0 22px;border:none;border-radius:8px;font-weight:750;font-size:17px;cursor:pointer}
+.btn.primary{background:var(--orange);color:#fff;width:100%;margin-top:22px}
+.btn.primary:disabled{opacity:.6;cursor:progress}
+.btn.ghost{background:transparent;border:2px solid var(--line);color:var(--navy);height:46px;font-size:15px}
+.btn.blue{background:var(--blue);color:#fff;height:46px;font-size:15px}
+.spinner{width:18px;height:18px;border:3px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.legal{font-size:12.5px;color:var(--muted);margin-top:26px;line-height:1.5}
+.foot{display:flex;justify-content:flex-end;margin-top:18px}
+.foot a{color:var(--muted);font-size:14px;text-decoration:underline}
+
+/* ---------- Éxito ---------- */
+.done{background:var(--card);border-radius:12px;margin-top:22px;padding:26px 22px;border:2px solid var(--line);text-align:center}
+.done .check{width:58px;height:58px;border-radius:50%;background:var(--ok);display:grid;place-items:center;margin:0 auto 12px}
+.done .check svg{width:30px;height:30px;stroke:#fff}
+.done h2{margin:0;font-size:26px;font-stretch:80%}
+.done .code-lbl{margin-top:20px;font-size:14px;color:var(--muted)}
+.done .code{font-size:40px;font-weight:800;letter-spacing:.06em;font-stretch:80%;color:var(--blue);margin:2px 0 4px;user-select:all}
+.done .msg{background:var(--ok-bg);color:var(--ok);padding:12px;border-radius:8px;font-weight:700;margin-top:16px}
+.done dl{text-align:left;margin:18px 0 0;display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:15px;border-top:2px dashed var(--line);padding-top:16px}
+.done dt{color:var(--muted)}
+.done dd{margin:0;font-weight:650;word-break:break-word}
+.done .keep{font-size:14px;color:var(--muted);margin-top:14px}
+
+/* ---------- Diálogo PIN ---------- */
+dialog{border:none;border-radius:12px;padding:24px;width:min(360px,92vw);color:var(--ink)}
+dialog::backdrop{background:rgba(11,30,91,.55)}
+dialog h2{margin:0 0 14px;font-size:21px}
+dialog .actions{display:flex;gap:10px;margin-top:16px}
+dialog .actions .btn{flex:1}
+
+/* ---------- Panel ---------- */
+.panel-head{background:var(--navy);color:#fff;padding:20px 0}
+.panel-head .wrap,.panel .wrap{max-width:1100px}
+.panel-head h1{margin:6px 0 0;font-size:28px;font-stretch:70%;line-height:1}
+.panel-head .sub{color:#C8D0F0;font-size:14px;margin-top:6px}
+.panel-head .top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.panel-head .top .btn{height:38px;border-color:rgba(255,255,255,.4);color:#fff}
+.panel main{padding-top:18px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.stat{background:#fff;border:2px solid var(--line);border-radius:10px;padding:14px 16px}
+.stat .k{font-size:14px;color:var(--muted)}
+.stat .v{font-size:34px;font-weight:800;font-stretch:75%;line-height:1.1}
+.stat .v small{font-size:16px;font-weight:600;color:var(--muted)}
+.stat .bar{height:8px;border-radius:4px;background:#E6E9F3;overflow:hidden;margin-top:8px}
+.stat .bar i{display:block;height:100%;background:var(--blue)}
+.box{background:#fff;border:2px solid var(--line);border-radius:10px;padding:16px;margin-top:16px}
+.box h2{margin:0 0 10px;font-size:18px}
+.qr-row{display:flex;gap:10px;flex-wrap:wrap}
+.qr-row input{flex:1;min-width:220px;height:46px;border:2px solid var(--line);border-radius:8px;padding:0 12px}
+#qrOut{margin-top:14px;display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap}
+#qrOut canvas,#qrOut img{border:10px solid #fff;outline:2px solid var(--line);border-radius:4px}
+.filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.filters label{font-size:13px;color:var(--muted);display:block;margin-bottom:3px}
+.filters input,.filters select{width:100%;height:44px;border:2px solid var(--line);border-radius:8px;padding:0 10px;background:#fff}
+.count{margin:14px 0 8px;font-weight:700}
+.table-wrap{overflow-x:auto;background:#fff;border:2px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:980px}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle}
+th{background:#EEF1F9;font-weight:700;white-space:nowrap}
+tr:last-child td{border-bottom:none}
+td .tag{display:inline-block;padding:3px 9px;border-radius:999px;font-weight:700;font-size:13px}
+.tag.pend{background:#FFF0E6;color:#A34200}
+.tag.entr{background:var(--ok-bg);color:var(--ok)}
+td a{color:var(--blue)}
+td:nth-child(1),td:nth-child(2),td:nth-child(4),td:nth-child(5){white-space:nowrap}
+td .btn{height:34px;font-size:13px;padding:0 12px;white-space:nowrap}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+
+@media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important}}
+
+.hero .excl{font-size:22px;font-weight:700;margin:4px 0 14px;color:#fff}
+.buscar{display:flex;gap:10px}
+.buscar input{flex:1;min-width:0;height:54px;padding:0 14px;border:2px solid var(--line);border-radius:8px;background:#fff;font-size:18px;text-transform:uppercase;letter-spacing:.03em}
+.buscar input:focus{border-color:var(--blue);outline:none}
+.buscar .btn{height:54px;margin:0;width:auto;padding:0 20px}
+.res{display:grid;gap:12px;margin-top:16px}
+.gan{background:#fff;border:2px solid var(--line);border-radius:10px;padding:14px 16px}
+.gan .top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.gan .cod{font-weight:800;font-size:20px;font-stretch:80%;color:var(--blue);letter-spacing:.03em}
+.gan .camp{font-size:12px;color:var(--muted)}
+.gan dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:10px 0 0;font-size:15px}
+.gan dt{color:var(--muted)} .gan dd{margin:0;font-weight:650}
+.gan .btn{margin-top:12px;height:48px}
+.gan.hecho{opacity:.75}
+.sel{border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,106,19,.18)}
+.vacio{background:#fff;border:2px dashed var(--line);border-radius:10px;padding:18px;text-align:center;color:var(--muted);margin-top:16px}
+.camps{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.camp-op{display:block;background:#fff;border:2px solid var(--line);border-radius:10px;padding:14px;cursor:pointer;text-align:left;font:inherit;color:inherit}
+.camp-op strong{display:block;font-size:18px;font-stretch:85%}
+.camp-op span{display:block;font-size:13px;color:var(--muted);margin-top:2px}
+.camp-op[aria-pressed="true"]{border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,106,19,.18)}
+.field.invalid .camp-op{border-color:var(--err)}
+.link{background:none;border:none;color:var(--blue);font-weight:700;text-decoration:underline;cursor:pointer;padding:8px 0;font-size:15px}
+
+.login{background:#fff;border:2px solid var(--line);border-radius:12px;padding:20px;margin-top:22px}
+.login input{width:100%;height:54px;border:2px solid var(--line);border-radius:8px;padding:0 14px;font-size:22px;letter-spacing:.2em;margin:8px 0 4px}
+.barra{position:sticky;top:0;z-index:5;background:var(--paper);padding:12px 0 10px;border-bottom:2px solid var(--line)}
+.resumen{display:flex;gap:14px;flex-wrap:wrap;font-size:14px;color:var(--muted);margin-bottom:10px}
+.resumen b{color:var(--navy);font-size:20px;font-stretch:80%}
+.filtros{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.filtros input,.filtros select{width:100%;height:44px;border:2px solid var(--line);border-radius:8px;padding:0 10px;background:#fff;font-size:15px}
+.filtros .full{grid-column:1/-1}
+.toggle{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;grid-column:1/-1}
+.toggle input{width:20px;height:20px;accent-color:var(--blue)}
+.ciudad{margin-top:22px}
+.ciudad h2{display:flex;justify-content:space-between;align-items:baseline;font-size:20px;margin:0 0 10px;font-stretch:85%}
+.ciudad h2 small{font-size:14px;font-weight:600;color:var(--muted);font-stretch:100%}
+.gan{background:#fff;border:2px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.gan.ok{border-color:#B9E2CF;background:#F6FBF8}
+.gan .top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.gan .nom{font-weight:750;font-size:17px}
+.gan .meta{font-size:13px;color:var(--muted);margin-top:2px}
+.gan .det{font-size:14px;margin-top:6px}
+.gan .acc{display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.btn.wa{background:#1FA855;color:#fff;height:44px;font-size:15px;text-decoration:none;padding:0 16px}
+.marca{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:650;cursor:pointer}
+.marca input{width:22px;height:22px;accent-color:var(--ok)}
+.fecha-aviso{font-size:12px;color:var(--ok);font-weight:600}
+.camp-tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;background:#E7ECFD;color:var(--navy);white-space:nowrap}
+.camp-tag.hf{background:#FFF0E6;color:#A34200}
+.sin-punto{color:#A34200;font-weight:650}
+.vacio{background:#fff;border:2px dashed var(--line);border-radius:10px;padding:18px;text-align:center;color:var(--muted);margin-top:16px}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <div class="brands"><span>entel</span><span class="honor">HONOR</span></div>
+    <h1>Avisos a ganadores</h1>
+    <p>Ganadores con regalo pendiente, por ciudad. Envía el WhatsApp con su punto de recojo y queda marcado como avisado.</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="login" id="vistaLogin">
+    <form id="formPin" novalidate>
+      <label for="pin" style="font-weight:700">PIN del equipo</label>
+      <input type="tel" id="pin" inputmode="numeric" autocomplete="off">
+      <div class="alert err hidden" id="pinErr"></div>
+      <button class="btn primary" id="pinOk" type="submit">Entrar</button>
+    </form>
+  </section>
+
+  <section class="hidden" id="vistaLista">
+    <div class="barra">
+      <div class="resumen" id="resumen"></div>
+      <div class="filtros">
+        <input id="fBuscar" class="full" type="text" placeholder="Buscar nombre, código, DNI/CE o tienda" aria-label="Buscar">
+        <select id="fCiudad" aria-label="Ciudad"><option value="">Todas las ciudades</option></select>
+        <select id="fCamp" aria-label="Campaña"><option value="">Todas las campañas</option></select>
+        <select id="fPunto" class="full" aria-label="Punto de recojo"><option value="">Todos (con y sin punto de recojo)</option><option value="si">Solo con punto de recojo definido</option><option value="no">Solo punto por definir</option></select>
+        <label class="toggle"><input type="checkbox" id="fOcultar"> Ocultar los ya avisados</label>
+      </div>
+    </div>
+    <div id="aviso" class="alert err hidden"></div>
+    <div id="lista"></div>
+    <div style="display:flex;gap:10px;margin:24px 0">
+      <button class="btn ghost" id="btnActualizar" type="button">Actualizar</button>
+      <button class="btn ghost" id="btnSalir" type="button">Salir</button>
+    </div>
+  </section>
+</main>
+
+<script>
+/* ============ CONFIGURACIÓN ============ */
+// Cada fuente: nombre de la campaña, URL de su Apps Script y, si aplica, el formulario y la ciudad fija
+const FUENTES = [
+  { id: 'SD',  campana: 'Shopping Days', clase: 'sd',
+    api: 'https://script.google.com/macros/s/AKfycbwBdQF3fAUvgCtfmPEYouA9qCFj4J9sGm1rWf2fkVNsR8c3e-oboPVxCxNQHg5brYZKrw/exec' },
+  { id: 'HY',  campana: 'Honor Fest', clase: 'hf', form: 'HUANCAYO', ciudad: 'Huancayo',
+    api: 'https://script.google.com/macros/s/AKfycbwsZzeFlHGM8mJNVQpKuOu9NO_vGCpCl15MVTtasTpW7j2YLfTOmwlB63BvD5rx2FYY/exec' },
+  { id: 'TX',  campana: 'Honor Fest', clase: 'hf', form: 'TEX', ciudad: 'Huancayo',
+    api: 'https://script.google.com/macros/s/AKfycbwsZzeFlHGM8mJNVQpKuOu9NO_vGCpCl15MVTtasTpW7j2YLfTOmwlB63BvD5rx2FYY/exec' }
+];
+
+// Puntos de recojo por departamento. Para agregar otra zona, copia un bloque y cambia los datos.
+// Los ganadores de departamentos que no estén aquí aparecen como "Punto de recojo por definir" (sin botón de WhatsApp).
+const RECOJO = [
+  { departamentos: ['Lima', 'Callao'],
+    fecha: 'jueves 15 de octubre', horario: '10 a. m. a 4 p. m.',
+    lugar: 'Av. José Pardo de Zela 274, Lince' }
+];
+/* ======================================= */
+const $ = (s) => document.querySelector(s);
+const norm = (s) => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase();
+function recojoDe(g){ return RECOJO.find(r => r.departamentos.some(d => norm(d) === norm(g.zona))) || null; }
+let pin = null, ganadores = [];
+
+function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+const ordenar = (a) => [...a].sort((x, y) => x.localeCompare(y, 'es'));
+function titulo(s){ return String(s || '').toLowerCase().replace(/(^|\s)\S/g, c => c.toUpperCase()); }
+
+async function post(f, payload){
+  const body = Object.assign({ pin }, f.form ? { form: f.form } : {}, payload);
+  const r = await fetch(f.api, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(body) });
+  return r.json();
+}
+
+/* ---------- Mensaje de WhatsApp ---------- */
+function linkWhatsApp(g){
+  const r = recojoDe(g);
+  const nombre = titulo(String(g.nombre || '').split(' ')[0]);
+  const regalo = Number(g.cantidad) > 1 ? 'tus ' + g.cantidad + ' ' + g.regalo : 'tu ' + g.regalo;
+  const msg = `Hola ${nombre}, ¡felicidades! 🎁 Ya puedes recoger ${regalo} de ${g.campana} el ${r.fecha}, ` +
+              `de ${r.horario}, en ${r.lugar}. Trae tu DNI o CE y tu código ${g.codigo} para recogerlo.`;
+  return 'https://wa.me/51' + String(g.celular).replace(/\D/g, '') + '?text=' + encodeURIComponent(msg);
+}
+
+/* ---------- Carga ---------- */
+async function cargar(){
+  const res = await Promise.allSettled(FUENTES.map(f => post(f, { accion: 'panel' }).then(r => ({ f, r }))));
+  const lista = [], fallas = [];
+  let pinMalo = false;
+  res.forEach((x, i) => {
+    if (x.status !== 'fulfilled'){ fallas.push(FUENTES[i]); return; }
+    const { f, r } = x.value;
+    if (!r.ok){ if (/PIN/i.test(r.error || '')) pinMalo = true; fallas.push(f); return; }
+    r.registros.filter(g => g.estado !== 'Entregado').forEach(g => lista.push(Object.assign({}, g, {
+      _f: f, campana: f.campana,
+      ciudad: f.ciudad || titulo(g.provincia) || '—',
+      zona: f.ciudad ? 'Junín' : titulo(g.departamento)
+    })));
+  });
+  return { lista, fallas, pinMalo };
+}
+
+$('#formPin').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const v = $('#pin').value.trim(); if (!v) return;
+  pin = v;
+  const b = $('#pinOk'); b.disabled = true; b.innerHTML = '<span class="spinner"></span> Cargando ganadores…';
+  try{
+    const { lista, fallas, pinMalo } = await cargar();
+    if (pinMalo && !lista.length){ mostrarPinErr('PIN incorrecto.'); return; }
+    if (fallas.length === FUENTES.length){ mostrarPinErr('Sin conexión con los servidores. Revisa internet e intenta otra vez.'); return; }
+    try{ sessionStorage.setItem('avisos_pin', pin); }catch(err){}
+    entrar(lista, fallas);
+  }catch(err){ mostrarPinErr('Sin conexión con los servidores.'); }
+  finally{ b.disabled = false; b.textContent = 'Entrar'; }
+});
+function mostrarPinErr(t){ const el = $('#pinErr'); el.textContent = t; el.classList.remove('hidden'); pin = null; }
+
+function entrar(lista, fallas){
+  ganadores = lista;
+  $('#vistaLogin').classList.add('hidden'); $('#vistaLista').classList.remove('hidden');
+  const av = $('#aviso');
+  if (fallas.length){
+    av.textContent = 'No se pudo cargar: ' + [...new Set(fallas.map(f => f.campana + (f.form ? ' ' + f.form : '')))].join(', ') + '. Toca "Actualizar" en un momento.';
+    av.classList.remove('hidden');
+  } else av.classList.add('hidden');
+  const ciudades = ordenar(new Set(ganadores.map(g => g.ciudad)));
+  const cs = $('#fCiudad'), vc = cs.value;
+  cs.innerHTML = '<option value="">Todas las ciudades</option>' + ciudades.map(c => `<option>${esc(c)}</option>`).join('');
+  cs.value = ciudades.includes(vc) ? vc : '';
+  const camps = [...new Set(FUENTES.map(f => f.campana))];
+  const cp = $('#fCamp'), vp = cp.value;
+  cp.innerHTML = '<option value="">Todas las campañas</option>' + camps.map(c => `<option>${esc(c)}</option>`).join('');
+  cp.value = camps.includes(vp) ? vp : '';
+  pintar();
+}
+
+/* ---------- Pintar ---------- */
+function pintar(){
+  const q = $('#fBuscar').value.trim().toLowerCase(), ciudad = $('#fCiudad').value, camp = $('#fCamp').value, ocultar = $('#fOcultar').checked, punto = $('#fPunto').value;
+  const base = ganadores.filter(g => (!ciudad || g.ciudad === ciudad) && (!camp || g.campana === camp) && (!punto || (punto === 'si') === !!recojoDe(g)) &&
+    (!q || [g.nombre, g.codigo, g.dni, g.tienda, g.celular].join(' ').toLowerCase().includes(q)));
+  const total = base.length, avisados = base.filter(g => g.avisado).length;
+  $('#resumen').innerHTML = `<span><b>${total}</b> pendientes de recoger</span><span><b>${avisados}</b> avisados</span><span><b>${total - avisados}</b> por avisar</span>`;
+  const visibles = ocultar ? base.filter(g => !g.avisado) : base;
+  if (!visibles.length){
+    $('#lista').innerHTML = `<div class="vacio">${ganadores.length ? (ocultar && total ? '¡Todos los ganadores de este filtro ya fueron avisados!' : 'Ningún ganador coincide con el filtro.') : 'No hay ganadores pendientes de recoger.'}</div>`;
+    return;
+  }
+  const grupos = {};
+  visibles.forEach(g => (grupos[g.ciudad] = grupos[g.ciudad] || []).push(g));
+  const todosPorCiudad = {};
+  base.forEach(g => { const c = todosPorCiudad[g.ciudad] = todosPorCiudad[g.ciudad] || { t: 0, a: 0 }; c.t++; if (g.avisado) c.a++; });
+  $('#lista').innerHTML = ordenar(Object.keys(grupos)).map(c => {
+    const zona = grupos[c][0].zona, k = todosPorCiudad[c];
+    return `<section class="ciudad"><h2>${esc(c)}${zona && zona !== c ? ` <span style="font-weight:500;font-size:15px;color:var(--muted)">· ${esc(zona)}</span>` : ''}<small>${k.a} de ${k.t} avisados</small></h2>` +
+      grupos[c].sort((a, b) => (a.avisado - b.avisado) || String(a.nombre).localeCompare(b.nombre, 'es')).map(tarjeta).join('') + '</section>';
+  }).join('');
+}
+
+function tarjeta(g){
+  const i = ganadores.indexOf(g);
+  const regalo = (Number(g.cantidad) > 1 ? g.cantidad + ' × ' : '') + g.regalo;
+  const r = recojoDe(g);
+  return `<div class="gan${g.avisado ? ' ok' : ''}">
+    <div class="top"><div><div class="nom">${esc(titulo(g.nombre))}</div><div class="meta">${esc(g.codigo)} · ${esc(g.celular)}</div></div>
+      <span class="camp-tag ${g._f.clase}">${esc(g.campana)}${g._f.form === 'TEX' ? ' · TEX' : ''}</span></div>
+    <div class="det">🎁 ${esc(regalo)}<br>🛒 Compró en ${esc(g.tienda)}<br>${r ? `📍 Recojo: ${esc(r.fecha)}, ${esc(r.horario)} · ${esc(r.lugar)}` : '<span class="sin-punto">📍 Punto de recojo por definir</span>'}</div>
+    <div class="acc">
+      ${!r ? '' : g.celular ? `<a class="btn wa" href="${linkWhatsApp(g)}" target="_blank" rel="noopener" data-wa="${i}">Enviar WhatsApp</a>` : '<span class="meta">Sin celular</span>'}
+      <label class="marca"><input type="checkbox" data-av="${i}" ${g.avisado ? 'checked' : ''}> Avisado</label>
+      ${g.avisado && g.fechaAviso ? `<span class="fecha-aviso">${esc(g.fechaAviso)}</span>` : ''}
+    </div>
+  </div>`;
+}
+
+async function marcar(g, valor){
+  const antes = { avisado: g.avisado, fechaAviso: g.fechaAviso };
+  g.avisado = valor; if (!valor) g.fechaAviso = '';
+  pintar();
+  try{
+    const r = await post(g._f, { accion: 'marcarAviso', codigo: g.codigo, avisado: valor });
+    if (!r.ok) throw new Error(r.error);
+    g.avisado = r.avisado; g.fechaAviso = r.fechaAviso;
+  }catch(err){
+    Object.assign(g, antes);
+    alert('No se pudo guardar el aviso de ' + g.codigo + '. ' + (err.message || 'Revisa tu conexión.'));
+  }
+  pintar();
+}
+
+$('#lista').addEventListener('click', (e) => {
+  const a = e.target.closest('a[data-wa]');
+  if (a){ const g = ganadores[Number(a.dataset.wa)]; if (g && !g.avisado) marcar(g, true); }
+});
+$('#lista').addEventListener('change', (e) => {
+  const c = e.target.closest('input[data-av]');
+  if (c){ const g = ganadores[Number(c.dataset.av)]; if (g) marcar(g, c.checked); }
+});
+['fBuscar','fCiudad','fCamp','fOcultar','fPunto'].forEach(id => $('#'+id).addEventListener('input', pintar));
+
+$('#btnActualizar').addEventListener('click', async () => {
+  const b = $('#btnActualizar'); b.disabled = true; b.textContent = 'Actualizando…';
+  try{ const { lista, fallas } = await cargar(); entrar(lista, fallas); }
+  catch(err){ alert('Sin conexión con los servidores.'); }
+  finally{ b.disabled = false; b.textContent = 'Actualizar'; }
+});
+$('#btnSalir').addEventListener('click', () => {
+  pin = null; ganadores = []; try{ sessionStorage.removeItem('avisos_pin'); }catch(e){}
+  $('#vistaLista').classList.add('hidden'); $('#vistaLogin').classList.remove('hidden'); $('#pin').value = '';
+});
+
+(function(){
+  let p = null; try{ p = sessionStorage.getItem('avisos_pin'); }catch(e){}
+  if (p){ $('#pin').value = p; $('#formPin').requestSubmit(); }
+})();
+</script>
+</body>
+</html>
