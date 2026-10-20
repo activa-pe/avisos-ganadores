@@ -325,9 +325,30 @@ const RECOJO = [
     lugar: 'Calle Lirios 320, San Juan Bautista (Iquitos)' },
   { ciudades: ['Arequipa'], responsable: 'Edith Pauca', numero: '973 212 504',
     horario: '9 a. m. a 7 p. m.', desde: '20 de octubre',
-    lugar: 'Av. Ejército 710, edificio El Peral, piso 7, oficina 709 (Arequipa)' }
-  // Huancayo: Calle Ayacucho 199, oficina 202 (frente al colegio María Inmaculada), desde el 26 de octubre.
-  // Falta el nombre y número del responsable; cuando lo tengas, agrega aquí un bloque con ciudades: ['Huancayo'].
+    lugar: 'Av. Ejército 710, edificio El Peral, piso 7, oficina 709 (Arequipa)' },
+  { ciudades: ['Tarapoto', 'San Martín'], responsable: 'Sair Romero Garcia', numero: '950 195 109',
+    horario: '10 a. m. a 4 p. m.', desde: '21 de octubre',
+    lugar: 'Psje. América Mz. E Lt. 13, La Banda de Shilcayo, ex carretera Yurimaguas (Tarapoto)' },
+  { ciudades: ['Tumbes'], responsable: 'Kyara Milagritos Rivas Castro', numero: '950 194 769',
+    horario: '10 a. m. a 4 p. m.', desde: '21 de octubre',
+    lugar: 'Jr. Simón Bolívar 384 (Tumbes)' },
+  { ciudades: ['Ayacucho', 'Huamanga'], responsable: 'Liz Rocio Pineda Velarde', numero: '997 049 934',
+    horario: '10 a. m. a 4 p. m.', desde: '21 de octubre',
+    lugar: 'AA. HH. Inti Raymi Mz. A Lt. 10, a dos cuadras de la Municipalidad de Nazarenas (Ayacucho)' },
+  { ciudades: ['Chimbote', 'Santa'], responsable: 'Monica Graciela Arrasco Jara', numero: '919 473 094',
+    horario: '10 a. m. a 4 p. m.', desde: '21 de octubre',
+    lugar: 'Av. Francisco Bolognesi 543 (Chimbote)' },
+  // Sin responsable: el mensaje indica recoger directamente en la dirección a partir de la fecha
+  { ciudades: ['Chiclayo'], horario: '10 a. m. a 4 p. m.', desde: '21 de octubre',
+    lugar: 'Calle Juan Tomis Stack 334, Urb. José Quiñones (Chiclayo)' },
+  { ciudades: ['Cusco'], horario: '10 a. m. a 4 p. m.', desde: '21 de octubre',
+    lugar: 'Parque Amauta E-25, Urb. Magisterio Primera Etapa (Cusco)' },
+  { ciudades: ['Piura'], horario: '10 a. m. a 4 p. m.', desde: '21 de octubre',
+    lugar: 'Av. San Ramón, Urb. San Dionisio Lt. A6, El Chipe (Piura)' },
+  { ciudades: ['Trujillo'], horario: '10 a. m. a 4 p. m.', desde: '21 de octubre',
+    lugar: 'Urb. Primavera, calle Teodoro Valcárcel 309 (Trujillo)' },
+  { ciudades: ['Huancayo'], horario: '10 a. m. a 4 p. m.', desde: '26 de octubre',
+    lugar: 'Calle Ayacucho 199, oficina 202, frente al colegio María Inmaculada (Huancayo)' }
 ];
 /* ======================================= */
 const $ = (s) => document.querySelector(s);
@@ -354,6 +375,9 @@ function linkWhatsApp(g){
     ? `Hola ${nombre}, ¡felicidades! 🎁 Ya puedes coordinar el recojo de ${regalo} de ${g.campana}. ` +
       `Comunícate con ${r.responsable} al ${r.numero}, de ${r.horario}, a partir del ${r.desde}. ` +
       `El recojo es en ${r.lugar}. Lleva tu DNI o CE y tu código ${g.codigo}.`
+    : r.desde
+    ? `Hola ${nombre}, ¡felicidades! 🎁 Ya puedes recoger ${regalo} de ${g.campana} a partir del ${r.desde}, ` +
+      `de ${r.horario}, en ${r.lugar}. Trae tu DNI o CE y tu código ${g.codigo} para recogerlo.`
     : `Hola ${nombre}, ¡felicidades! 🎁 Ya puedes recoger ${regalo} de ${g.campana} el ${r.fecha}, ` +
       `de ${r.horario}, en ${r.lugar}. Trae tu DNI o CE y tu código ${g.codigo} para recogerlo.`;
   return 'https://wa.me/51' + String(g.celular).replace(/\D/g, '') + '?text=' + encodeURIComponent(msg);
@@ -442,7 +466,7 @@ function tarjeta(g){
   return `<div class="gan${g.avisado ? ' ok' : ''}">
     <div class="top"><div><div class="nom">${esc(titulo(g.nombre))}</div><div class="meta">${esc(g.codigo)} · ${esc(g.celular)}</div></div>
       <span class="camp-tag ${g._f.clase}">${esc(g.campana)}${g._f.form === 'TEX' ? ' · TEX' : ''}</span></div>
-    <div class="det">🎁 ${esc(regalo)}<br>🛒 Compró en ${esc(g.tienda)}<br>${r ? (r.responsable ? `📞 Coordina con ${esc(r.responsable)} · ${esc(r.numero)} · ${esc(r.horario)}, desde el ${esc(r.desde)}<br>📍 ${esc(r.lugar)}` : `📍 Recojo: ${esc(r.fecha)}, ${esc(r.horario)} · ${esc(r.lugar)}`) : '<span class="sin-punto">📍 Punto de recojo por definir</span>'}</div>
+    <div class="det">🎁 ${esc(regalo)}<br>🛒 Compró en ${esc(g.tienda)}<br>${r ? (r.responsable ? `📞 Coordina con ${esc(r.responsable)} · ${esc(r.numero)} · ${esc(r.horario)}, desde el ${esc(r.desde)}<br>📍 ${esc(r.lugar)}` : `📍 Recojo: ${r.desde ? 'desde el ' + esc(r.desde) : esc(r.fecha)}, ${esc(r.horario)} · ${esc(r.lugar)}`) : '<span class="sin-punto">📍 Punto de recojo por definir</span>'}</div>
     <div class="acc">
       ${!r ? '' : g.celular ? `<a class="btn wa" href="${linkWhatsApp(g)}" target="_blank" rel="noopener" data-wa="${i}">Enviar WhatsApp</a>` : '<span class="meta">Sin celular</span>'}
       <label class="marca"><input type="checkbox" data-av="${i}" ${g.avisado ? 'checked' : ''}> Avisado</label>
