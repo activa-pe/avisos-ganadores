@@ -301,17 +301,35 @@ const FUENTES = [
     api: 'https://script.google.com/macros/s/AKfycbwsZzeFlHGM8mJNVQpKuOu9NO_vGCpCl15MVTtasTpW7j2YLfTOmwlB63BvD5rx2FYY/exec' }
 ];
 
-// Puntos de recojo por departamento. Para agregar otra zona, copia un bloque y cambia los datos.
-// Los ganadores de departamentos que no estén aquí aparecen como "Punto de recojo por definir" (sin botón de WhatsApp).
+// Puntos de recojo. Cada bloque se aplica por departamento (departamentos) o por ciudad/provincia (ciudades).
+// Con "responsable", el mensaje pide comunicarse con esa persona para coordinar el recojo.
+// Los ganadores que no calcen con ningún bloque aparecen como "Punto de recojo por definir" (sin botón de WhatsApp).
 const RECOJO = [
   { departamentos: ['Lima', 'Callao'],
     fecha: 'jueves 15 de octubre', horario: '10 a. m. a 4 p. m.',
-    lugar: 'Av. José Pardo de Zela 274, Lince' }
+    lugar: 'Av. José Pardo de Zela 274, Lince' },
+  { ciudades: ['Chincha'], responsable: 'Carolay Estefania Ching Quijano', numero: '919 477 074',
+    horario: '10 a. m. a 4 p. m.', desde: '20 de octubre',
+    lugar: 'Jr. Alfonso Ugarte, puerta 06, sector Los Álamos, Pueblo Nuevo (Chincha)' },
+  { ciudades: ['Pisco'], responsable: 'Rocio Marisela Vera Condemarin', numero: '919 474 479',
+    horario: '10 a. m. a 4 p. m.', desde: '20 de octubre',
+    lugar: 'Av. Abraham Valdelomar S/N, Urb. Residencial Pisco C, Lt. 14, cruce con Las Américas (Pisco)' },
+  { ciudades: ['Huánuco'], responsable: 'Alexander Lenin Santiago Gonzales', numero: '919 473 483',
+    horario: '10 a. m. a 4 p. m.', desde: '26 de octubre',
+    lugar: 'Jr. Manco Cápac 136, tercer piso, Amarilis (Huánuco)' },
+  { ciudades: ['Ica'], responsable: 'Cesar Gianfranco Ching Quijano', numero: '919 474 093',
+    horario: '10 a. m. a 4 p. m.', desde: '26 de octubre',
+    lugar: 'Av. San Martín 123, stand 209 (Ica)' },
+  { ciudades: ['Iquitos', 'Maynas'], responsable: 'Claudia Fajardo Pizango', numero: '919 473 292',
+    horario: '10 a. m. a 4 p. m.', desde: '26 de octubre',
+    lugar: 'Calle Lirios 320, San Juan Bautista (Iquitos)' }
+  // Huancayo: Calle Ayacucho 199, oficina 202 (frente al colegio María Inmaculada), desde el 26 de octubre.
+  // Falta el nombre y número del responsable; cuando lo tengas, agrega aquí un bloque con ciudades: ['Huancayo'].
 ];
 /* ======================================= */
 const $ = (s) => document.querySelector(s);
 const norm = (s) => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase();
-function recojoDe(g){ return RECOJO.find(r => r.departamentos.some(d => norm(d) === norm(g.zona))) || null; }
+function recojoDe(g){ return RECOJO.find(r => (r.departamentos || []).some(d => norm(d) === norm(g.zona)) || (r.ciudades || []).some(c => norm(c) === norm(g.ciudad))) || null; }
 let pin = null, ganadores = [];
 
 function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
@@ -329,8 +347,12 @@ function linkWhatsApp(g){
   const r = recojoDe(g);
   const nombre = titulo(String(g.nombre || '').split(' ')[0]);
   const regalo = Number(g.cantidad) > 1 ? 'tus ' + g.cantidad + ' ' + g.regalo : 'tu ' + g.regalo;
-  const msg = `Hola ${nombre}, ¡felicidades! 🎁 Ya puedes recoger ${regalo} de ${g.campana} el ${r.fecha}, ` +
-              `de ${r.horario}, en ${r.lugar}. Trae tu DNI o CE y tu código ${g.codigo} para recogerlo.`;
+  const msg = r.responsable
+    ? `Hola ${nombre}, ¡felicidades! 🎁 Ya puedes coordinar el recojo de ${regalo} de ${g.campana}. ` +
+      `Comunícate con ${r.responsable} al ${r.numero}, de ${r.horario}, a partir del ${r.desde}. ` +
+      `El recojo es en ${r.lugar}. Lleva tu DNI o CE y tu código ${g.codigo}.`
+    : `Hola ${nombre}, ¡felicidades! 🎁 Ya puedes recoger ${regalo} de ${g.campana} el ${r.fecha}, ` +
+      `de ${r.horario}, en ${r.lugar}. Trae tu DNI o CE y tu código ${g.codigo} para recogerlo.`;
   return 'https://wa.me/51' + String(g.celular).replace(/\D/g, '') + '?text=' + encodeURIComponent(msg);
 }
 
@@ -417,7 +439,7 @@ function tarjeta(g){
   return `<div class="gan${g.avisado ? ' ok' : ''}">
     <div class="top"><div><div class="nom">${esc(titulo(g.nombre))}</div><div class="meta">${esc(g.codigo)} · ${esc(g.celular)}</div></div>
       <span class="camp-tag ${g._f.clase}">${esc(g.campana)}${g._f.form === 'TEX' ? ' · TEX' : ''}</span></div>
-    <div class="det">🎁 ${esc(regalo)}<br>🛒 Compró en ${esc(g.tienda)}<br>${r ? `📍 Recojo: ${esc(r.fecha)}, ${esc(r.horario)} · ${esc(r.lugar)}` : '<span class="sin-punto">📍 Punto de recojo por definir</span>'}</div>
+    <div class="det">🎁 ${esc(regalo)}<br>🛒 Compró en ${esc(g.tienda)}<br>${r ? (r.responsable ? `📞 Coordina con ${esc(r.responsable)} · ${esc(r.numero)} · ${esc(r.horario)}, desde el ${esc(r.desde)}<br>📍 ${esc(r.lugar)}` : `📍 Recojo: ${esc(r.fecha)}, ${esc(r.horario)} · ${esc(r.lugar)}`) : '<span class="sin-punto">📍 Punto de recojo por definir</span>'}</div>
     <div class="acc">
       ${!r ? '' : g.celular ? `<a class="btn wa" href="${linkWhatsApp(g)}" target="_blank" rel="noopener" data-wa="${i}">Enviar WhatsApp</a>` : '<span class="meta">Sin celular</span>'}
       <label class="marca"><input type="checkbox" data-av="${i}" ${g.avisado ? 'checked' : ''}> Avisado</label>
