@@ -348,7 +348,18 @@ const RECOJO = [
   { ciudades: ['Trujillo'], horario: '10 a. m. a 4 p. m.', desde: '21 de octubre',
     lugar: 'Urb. Primavera, calle Teodoro Valcárcel 309 (Trujillo)' },
   { ciudades: ['Huancayo'], horario: '10 a. m. a 4 p. m.', desde: '26 de octubre',
-    lugar: 'Calle Ayacucho 199, oficina 202, frente al colegio María Inmaculada (Huancayo)' }
+    lugar: 'Calle Ayacucho 199, oficina 202, frente al colegio María Inmaculada (Huancayo)' },
+  { ciudades: ['Jaén'], responsable: 'Yordelys Karina Araque Roa', numero: '986 081 144',
+    horario: '10 a. m. a 4 p. m.',
+    lugar: 'Av. Pakamuros cuadra 6 S/N, esquina con calle Libertad 490 (Jaén)' },
+  { ciudades: ['Moyobamba'], responsable: 'Gian Frank Perez Mozombite', numero: '919 474 575',
+    horario: '10 a. m. a 4 p. m.',
+    lugar: 'Jr. Serafín Filomeno 279 (Moyobamba)' },
+  { ciudades: ['Pucallpa', 'Coronel Portillo'], responsable: 'Jorge Enrique Gomez Cardenas', numero: '919 474 092',
+    horario: '10 a. m. a 4 p. m.',
+    lugar: 'Av. Lloque Yupanqui 795, Residencial Costa Verde, a espaldas del cementerio km 5 (Pucallpa)' },
+  { ciudades: ['Cajamarca'], horario: '10 a. m. a 4 p. m.',
+    lugar: 'Av. Vía de Evitamiento Norte 2390, Urb. San Roque, oficina Manpower (Cajamarca)' }
 ];
 /* ======================================= */
 const $ = (s) => document.querySelector(s);
@@ -371,14 +382,12 @@ function linkWhatsApp(g){
   const r = recojoDe(g);
   const nombre = titulo(String(g.nombre || '').split(' ')[0]);
   const regalo = Number(g.cantidad) > 1 ? 'tus ' + g.cantidad + ' ' + g.regalo : 'tu ' + g.regalo;
+  const cuando = r.desde ? `a partir del ${r.desde}, ` : r.fecha ? `el ${r.fecha}, ` : '';
   const msg = r.responsable
     ? `Hola ${nombre}, ¡felicidades! 🎁 Ya puedes coordinar el recojo de ${regalo} de ${g.campana}. ` +
-      `Comunícate con ${r.responsable} al ${r.numero}, de ${r.horario}, a partir del ${r.desde}. ` +
+      `Comunícate con ${r.responsable} al ${r.numero}, de ${r.horario}${r.desde ? ', a partir del ' + r.desde + '.' : ''} ` +
       `El recojo es en ${r.lugar}. Lleva tu DNI o CE y tu código ${g.codigo}.`
-    : r.desde
-    ? `Hola ${nombre}, ¡felicidades! 🎁 Ya puedes recoger ${regalo} de ${g.campana} a partir del ${r.desde}, ` +
-      `de ${r.horario}, en ${r.lugar}. Trae tu DNI o CE y tu código ${g.codigo} para recogerlo.`
-    : `Hola ${nombre}, ¡felicidades! 🎁 Ya puedes recoger ${regalo} de ${g.campana} el ${r.fecha}, ` +
+    : `Hola ${nombre}, ¡felicidades! 🎁 Ya puedes recoger ${regalo} de ${g.campana} ${cuando}` +
       `de ${r.horario}, en ${r.lugar}. Trae tu DNI o CE y tu código ${g.codigo} para recogerlo.`;
   return 'https://wa.me/51' + String(g.celular).replace(/\D/g, '') + '?text=' + encodeURIComponent(msg);
 }
@@ -466,7 +475,7 @@ function tarjeta(g){
   return `<div class="gan${g.avisado ? ' ok' : ''}">
     <div class="top"><div><div class="nom">${esc(titulo(g.nombre))}</div><div class="meta">${esc(g.codigo)} · ${esc(g.celular)}</div></div>
       <span class="camp-tag ${g._f.clase}">${esc(g.campana)}${g._f.form === 'TEX' ? ' · TEX' : ''}</span></div>
-    <div class="det">🎁 ${esc(regalo)}<br>🛒 Compró en ${esc(g.tienda)}<br>${r ? (r.responsable ? `📞 Coordina con ${esc(r.responsable)} · ${esc(r.numero)} · ${esc(r.horario)}, desde el ${esc(r.desde)}<br>📍 ${esc(r.lugar)}` : `📍 Recojo: ${r.desde ? 'desde el ' + esc(r.desde) : esc(r.fecha)}, ${esc(r.horario)} · ${esc(r.lugar)}`) : '<span class="sin-punto">📍 Punto de recojo por definir</span>'}</div>
+    <div class="det">🎁 ${esc(regalo)}<br>🛒 Compró en ${esc(g.tienda)}<br>${r ? (r.responsable ? `📞 Coordina con ${esc(r.responsable)} · ${esc(r.numero)} · ${esc(r.horario)}${r.desde ? ', desde el ' + esc(r.desde) : ''}<br>📍 ${esc(r.lugar)}` : `📍 Recojo: ${r.desde ? 'desde el ' + esc(r.desde) + ', ' : r.fecha ? esc(r.fecha) + ', ' : ''}${esc(r.horario)} · ${esc(r.lugar)}`) : '<span class="sin-punto">📍 Punto de recojo por definir</span>'}</div>
     <div class="acc">
       ${!r ? '' : g.celular ? `<a class="btn wa" href="${linkWhatsApp(g)}" target="_blank" rel="noopener" data-wa="${i}">Enviar WhatsApp</a>` : '<span class="meta">Sin celular</span>'}
       <label class="marca"><input type="checkbox" data-av="${i}" ${g.avisado ? 'checked' : ''}> Avisado</label>
