@@ -298,7 +298,11 @@ const FUENTES = [
   { id: 'HY',  campana: 'Honor Fest', clase: 'hf', form: 'HUANCAYO', ciudad: 'Huancayo',
     api: 'https://script.google.com/macros/s/AKfycbwsZzeFlHGM8mJNVQpKuOu9NO_vGCpCl15MVTtasTpW7j2YLfTOmwlB63BvD5rx2FYY/exec' },
   { id: 'TX',  campana: 'Honor Fest', clase: 'hf', form: 'TEX', ciudad: 'Huancayo',
-    api: 'https://script.google.com/macros/s/AKfycbwsZzeFlHGM8mJNVQpKuOu9NO_vGCpCl15MVTtasTpW7j2YLfTOmwlB63BvD5rx2FYY/exec' }
+    api: 'https://script.google.com/macros/s/AKfycbwsZzeFlHGM8mJNVQpKuOu9NO_vGCpCl15MVTtasTpW7j2YLfTOmwlB63BvD5rx2FYY/exec' },
+  // Ganadores de ventas web (pestaña "Online" de la hoja de Shopping Days)
+  { id: 'ON',  campana: 'Ganadores Online', clase: 'sd', form: 'ONLINE', ciudad: 'Online · recojo en San Isidro',
+    api: 'https://script.google.com/macros/s/AKfycbwBdQF3fAUvgCtfmPEYouA9qCFj4J9sGm1rWf2fkVNsR8c3e-oboPVxCxNQHg5brYZKrw/exec',
+    recojo: { online: true, lugar: 'Av. Javier Prado 492, San Isidro', horario: 'de lunes a viernes de 9 a. m. a 6 p. m.' } }
 ];
 
 // Puntos de recojo. Cada bloque se aplica por departamento (departamentos) o por ciudad/provincia (ciudades).
@@ -364,7 +368,7 @@ const RECOJO = [
 /* ======================================= */
 const $ = (s) => document.querySelector(s);
 const norm = (s) => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase();
-function recojoDe(g){ return RECOJO.find(r => (r.departamentos || []).some(d => norm(d) === norm(g.zona)) || (r.ciudades || []).some(c => norm(c) === norm(g.ciudad))) || null; }
+function recojoDe(g){ if (g._f && g._f.recojo) return g._f.recojo; return RECOJO.find(r => (r.departamentos || []).some(d => norm(d) === norm(g.zona)) || (r.ciudades || []).some(c => norm(c) === norm(g.ciudad))) || null; }
 let pin = null, ganadores = [];
 
 function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
@@ -382,6 +386,11 @@ function linkWhatsApp(g){
   const r = recojoDe(g);
   const nombre = titulo(String(g.nombre || '').split(' ')[0]);
   const regalo = Number(g.cantidad) > 1 ? 'tus ' + g.cantidad + ' ' + g.regalo : 'tu ' + g.regalo;
+  if (r.online){
+    const msg = `Hola, ¡felicidades! 🎁 Ya puedes recoger tu ${g.regalo} en ${r.lugar}, ${r.horario}, previa coordinación. ` +
+                `Responde este mensaje para coordinar el día de tu visita. Recuerda traer tu DNI físico.`;
+    return 'https://wa.me/51' + String(g.celular).replace(/\D/g, '') + '?text=' + encodeURIComponent(msg);
+  }
   const cuando = r.desde ? `a partir del ${r.desde}, ` : r.fecha ? `el ${r.fecha}, ` : '';
   const msg = r.responsable
     ? `Hola ${nombre}, ¡felicidades! 🎁 Ya puedes coordinar el recojo de ${regalo} de ${g.campana}. ` +
@@ -404,7 +413,7 @@ async function cargar(){
     r.registros.filter(g => g.estado !== 'Entregado').forEach(g => lista.push(Object.assign({}, g, {
       _f: f, campana: f.campana,
       ciudad: f.ciudad || titulo(g.provincia) || '—',
-      zona: f.ciudad ? 'Junín' : titulo(g.departamento)
+      zona: f.recojo ? '' : f.ciudad ? 'Junín' : titulo(g.departamento)
     })));
   });
   return { lista, fallas, pinMalo };
@@ -473,9 +482,9 @@ function tarjeta(g){
   const regalo = (Number(g.cantidad) > 1 ? g.cantidad + ' × ' : '') + g.regalo;
   const r = recojoDe(g);
   return `<div class="gan${g.avisado ? ' ok' : ''}">
-    <div class="top"><div><div class="nom">${esc(titulo(g.nombre))}</div><div class="meta">${esc(g.codigo)} · ${esc(g.celular)}</div></div>
-      <span class="camp-tag ${g._f.clase}">${esc(g.campana)}${g._f.form === 'TEX' ? ' · TEX' : ''}</span></div>
-    <div class="det">🎁 ${esc(regalo)}<br>🛒 Compró en ${esc(g.tienda)}<br>${r ? (r.responsable ? `📞 Coordina con ${esc(r.responsable)} · ${esc(r.numero)} · ${esc(r.horario)}${r.desde ? ', desde el ' + esc(r.desde) : ''}<br>📍 ${esc(r.lugar)}` : `📍 Recojo: ${r.desde ? 'desde el ' + esc(r.desde) + ', ' : r.fecha ? esc(r.fecha) + ', ' : ''}${esc(r.horario)} · ${esc(r.lugar)}`) : '<span class="sin-punto">📍 Punto de recojo por definir</span>'}</div>
+    <div class="top"><div><div class="nom">${esc(titulo(g.nombre) || 'DNI ' + g.dni)}</div><div class="meta">${esc(g.codigo)} · ${esc(g.celular)}</div></div>
+      <span class="camp-tag ${g._f.clase}">${esc(g._f.recojo ? String(g.tienda).replace(/^Web · /, 'Online · ') : g.campana)}${g._f.form === 'TEX' ? ' · TEX' : ''}</span></div>
+    <div class="det">🎁 ${esc(regalo)}<br>🛒 Compró en ${esc(g.tienda)}<br>${r ? (r.online ? `📍 Recojo previa coordinación: ${esc(r.lugar)}, ${esc(r.horario)}` : r.responsable ? `📞 Coordina con ${esc(r.responsable)} · ${esc(r.numero)} · ${esc(r.horario)}${r.desde ? ', desde el ' + esc(r.desde) : ''}<br>📍 ${esc(r.lugar)}` : `📍 Recojo: ${r.desde ? 'desde el ' + esc(r.desde) + ', ' : r.fecha ? esc(r.fecha) + ', ' : ''}${esc(r.horario)} · ${esc(r.lugar)}`) : '<span class="sin-punto">📍 Punto de recojo por definir</span>'}</div>
     <div class="acc">
       ${!r ? '' : g.celular ? `<a class="btn wa" href="${linkWhatsApp(g)}" target="_blank" rel="noopener" data-wa="${i}">Enviar WhatsApp</a>` : '<span class="meta">Sin celular</span>'}
       <label class="marca"><input type="checkbox" data-av="${i}" ${g.avisado ? 'checked' : ''}> Avisado</label>
